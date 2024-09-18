@@ -46,10 +46,17 @@ public class TTT : MonoBehaviour
                     ChooseRandomCorner();
                     break;
                 }
-                if (AttemptToBlockO())
+                else if (AttemptToBlockO())
+                {
+                    Debug.Log("A");
                     break;
-                randomPossibleCell();
-                break;
+                }
+                else
+                {
+                    Debug.Log("B");
+                    randomPossibleCell();
+                    break;
+                }
             case PlayerOption.O:
                 if(CanOGoOnMiddle())            // Perfect 1st Turn
                 {
@@ -59,6 +66,12 @@ public class TTT : MonoBehaviour
                 {
                     ChooseRandomCorner();
                 }
+                else
+                {
+                    randomPossibleCell();
+                    break;
+                }
+                Debug.Log("NO");
                 break;
         }
     }
@@ -121,47 +134,43 @@ public class TTT : MonoBehaviour
                 return true;
         }
         return false;
-
     }
 
     void randomPossibleCell()
     {
+        int countOne = 0;
+        int randomNumber = 0;
+        int countTwo = 0;
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Columns; j++)
             {
-                if (cells[j, i].current != PlayerOption.NONE)
-                    ChooseSpace(j, i);
+                if (cells[j, i].current == PlayerOption.NONE)
+                {
+                    countOne++;
+                }
+            }
+        }
+        randomNumber = UnityEngine.Random.Range(randomNumber, countOne + 1);
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+            {
+                if (cells[j, i].current == PlayerOption.NONE)
+                {
+                    countTwo++;
+                    if(countTwo == countOne)
+                    {
+                        ChooseSpace(j, i);
+                        return;
+                    }
+                }
             }
         }
     }
 
     bool AttemptToBlockO()
     {
-        //if      (cells[0, 0].current == PlayerOption.O && cells[1, 0].current == PlayerOption.O)
-        //{
-        //ChooseSpace(2, 0); // O O ! > ? ? ? > ? ? ?
-        //}
-        //else if (cells[0, 1].current == PlayerOption.O && cells[1, 1].current == PlayerOption.O)
-        //{
-        //ChooseSpace(2, 1); // ? ? ? > O O ! > ? ? ?
-        //}
-        //else if (cells[0, 2].current == PlayerOption.O && cells[1, 2].current == PlayerOption.O)
-        //{
-        //ChooseSpace(2, 2); // ? ? ? > ? ? ? > O O !
-        //}
-        //else if (cells[1, 0].current == PlayerOption.O && cells[2, 0].current == PlayerOption.O)
-        //{
-        //ChooseSpace(0, 0); // ! O O > ? ? ? > ? ? ?
-        //}
-        //else if (cells[1, 1].current == PlayerOption.O && cells[2, 1].current == PlayerOption.O)
-        //{
-        //ChooseSpace(0, 1); // ? ? ? > ! O O > ? ? ?
-        //}
-        //else if (cells[1, 2].current == PlayerOption.O && cells[2, 2].current == PlayerOption.O)
-        //{
-        //ChooseSpace(0, 2); // ? ? ? > ? ? ? > ! O O
-        //}
         Debug.Log("hi");
         for(int i = 0; i < 2; i++) // O O ! All across the board (horizontal, left-right read)
         {
@@ -170,6 +179,7 @@ public class TTT : MonoBehaviour
                 if(cells[2, i].current != PlayerOption.X)
                 {
                     ChooseSpace(2, i);
+                    Debug.Log("1");
                     return true;
                 }
             }
@@ -181,6 +191,7 @@ public class TTT : MonoBehaviour
                 if (cells[0, i].current != PlayerOption.X)
                 {
                     ChooseSpace(0, i);
+                    Debug.Log("2");
                     return true;
                 }
             }
@@ -192,6 +203,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 2].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 2);
+                    Debug.Log("3");
                     return true;
                 }
             }
@@ -203,6 +215,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 0].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 0);
+                    Debug.Log("4");
                     return true;
                 }
             }
@@ -215,39 +228,44 @@ public class TTT : MonoBehaviour
                 {
                     if(i == 2 && x == 2)
                     {
-                        if (cells[i, x].current != PlayerOption.X)
+                        if (cells[i-2, x-2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i, x);
+                            ChooseSpace(i-2, x-2);
+                            Debug.Log("5");
                             return true;
                         }
                     }
                     else if(i == 2 && x == 0)
                     {
-                        if (cells[i, x].current != PlayerOption.X)
+                        if (cells[i-2, x+2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i, x);
+                            ChooseSpace(i-2, x+2);
+                            Debug.Log("6");
                             return true;
                         }
                     }
                     else if(i == 0 && x == 2)
                     {
-                        if (cells[i, x].current != PlayerOption.X)
+                        if (cells[i+2, x-2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i, x);
+                            ChooseSpace(i+2, x-2);
+                            Debug.Log("7");
                             return true;
                         }
                     }
                     else if(i == 2 && x == 0)
                     {
-                        if (cells[i, x].current != PlayerOption.X)
+                        if (cells[i-2, x+2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i, x);
+                            ChooseSpace(i-2, x+2);
+                            Debug.Log("8");
                             return true;
                         }
                     }
                 }
             }
         }
+        Debug.Log("hi2");
         return false;
     }
 

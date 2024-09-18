@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI.Table;
+using UnityEngine.InputSystem;
 
 public enum PlayerOption
 {
@@ -37,8 +36,9 @@ public class TTT : MonoBehaviour
         
     }
 
-    public void MakeOptimalMove()
+    public void OnMakeOptimalMove()
     {
+        Debug.Log("a");
         switch(currentPlayer)
         {
             case PlayerOption.X:
@@ -58,6 +58,17 @@ public class TTT : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    public void OnReset()
+    {
+        board.BoardViewReset(Rows, Columns);
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+                cells[j, i].current = PlayerOption.NONE;
+        }
+        currentPlayer = PlayerOption.X;
     }
 
     bool IsItEmptyBoard()
@@ -81,7 +92,7 @@ public class TTT : MonoBehaviour
 
     bool CheckIfAllCornersAreEmpty()
     {
-        if(cells[0, 0].current == PlayerOption.NONE || cells[2, 0].current == PlayerOption.NONE || cells[0, 2].current == PlayerOption.NONE || cells[2, 2].current == PlayerOption.NONE)
+        if(cells[0, 0].current == PlayerOption.NONE && cells[2, 0].current == PlayerOption.NONE && cells[0, 2].current == PlayerOption.NONE && cells[2, 2].current == PlayerOption.NONE)
             return true;
         return false;
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class BoardView : MonoBehaviour
 {
@@ -46,5 +47,16 @@ public class BoardView : MonoBehaviour
         else if (player == PlayerOption.O)
             symbol = "O";
         cells[c, r].SetText(symbol);
+    }
+
+    public void BoardViewReset(int cols, int rows)
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                cells[i, j].SetText("");
+            }
+        }
     }
 }

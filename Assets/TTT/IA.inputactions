@@ -1,0 +1,54 @@
+{
+    "name": "IA",
+    "maps": [
+        {
+            "name": "Make Move and Reset",
+            "id": "0527015f-9b3e-453c-9124-62620d6b0476",
+            "actions": [
+                {
+                    "name": "Make Optimal Move",
+                    "type": "Button",
+                    "id": "acfc5be3-34cd-40fe-a4d2-0ce7ba8473d0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Reset",
+                    "type": "Button",
+                    "id": "fb9c8293-d106-4ea0-8ace-1dabfb7ec631",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e86b5ee0-b289-4630-8c58-d4b8335ae860",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Make Optimal Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44acc896-95d0-4bcb-8f87-d6c87fb55f83",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

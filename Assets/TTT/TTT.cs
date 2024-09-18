@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public enum PlayerOption
 {
@@ -33,10 +34,79 @@ public class TTT : MonoBehaviour
                 cells[j, i].current = PlayerOption.NONE;
             }
         }
+        
     }
 
     public void MakeOptimalMove()
     {
+        switch(currentPlayer)
+        {
+            case PlayerOption.X:
+                if(IsItEmptyBoard())            // Perfect 1st Turn
+                {
+                    ChooseRandomCorner();
+                }
+                break;
+            case PlayerOption.O:
+                if(CanOGoOnMiddle())            // Perfect 1st Turn
+                {
+                    ChooseSpace(1, 1);
+                }
+                if(CheckIfAllCornersAreEmpty()) // 2nd turn if X took the middle
+                {
+                    ChooseRandomCorner();
+                }
+                break;
+        }
+    }
+
+    bool IsItEmptyBoard()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+            {
+                if(cells[j, i].current != PlayerOption.NONE)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    int RNG(int minInclusive, int maxExclusive)
+    {
+        int randonNumber = UnityEngine.Random.Range(minInclusive, maxExclusive);
+        return randonNumber;
+    }
+
+    bool CheckIfAllCornersAreEmpty()
+    {
+        if(cells[0, 0].current == PlayerOption.NONE || cells[2, 0].current == PlayerOption.NONE || cells[0, 2].current == PlayerOption.NONE || cells[2, 2].current == PlayerOption.NONE)
+            return true;
+        return false;
+    }
+
+    void ChooseRandomCorner()
+    {
+        int randonNumber = UnityEngine.Random.Range(0, 4);
+        if (randonNumber == 0)
+            ChooseSpace(0, 0);
+        else if (randonNumber == 1)
+            ChooseSpace(2, 0);
+        else if (randonNumber == 2)
+            ChooseSpace(0, 2);
+        else if (randonNumber == 3)
+            ChooseSpace(2, 2);
+    }
+
+    bool CanOGoOnMiddle()
+    {
+        if (cells[1, 1].current == PlayerOption.NONE)
+        {
+            if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
+                return true;
+        }
+        return false;
 
     }
 

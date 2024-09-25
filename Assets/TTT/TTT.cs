@@ -41,20 +41,23 @@ public class TTT : MonoBehaviour
         switch(currentPlayer)
         {
             case PlayerOption.X:
-                if (IsItEmptyBoard())
-                {
-                    ChooseRandomCorner();
-                    break;
-                }
-                else if (WinAsX())
+                if (WinAsX())
                 {
                     break;
                 }
-                else if (AttemptToBlockO())
+                else if (BlockO())
                 {
                     break;
                 }
-                else if (CanGoOnMiddle())
+                else if (AttemptGoOnMiddle())
+                {
+                    break;
+                }
+                else if (FromCornerChooseAdjacentCellAsX())
+                {
+                    break;
+                }
+                else if (ChooseRandomCorner())
                 {
                     break;
                 }
@@ -68,14 +71,18 @@ public class TTT : MonoBehaviour
                 {
                     break;
                 }
-                else if (AttemptToBlockX())
+                else if (BlockX())
                 {
                     break;
                 }
-                else if (CanGoOnMiddle())
+                else if (AttemptGoOnMiddle())
                 {
-                    break;
+                   break;
                 }
+                //else if (FromCornerChooseAdjacentCellAsO())
+                //{
+                    //break;
+                //}
                 else if (ChooseRandomCorner())
                 {
                     break;
@@ -163,7 +170,7 @@ public class TTT : MonoBehaviour
         return false;
     }
 
-    bool CanGoOnMiddle()
+    bool AttemptGoOnMiddle()
     {
         if (cells[1, 1].current == PlayerOption.NONE)
         {
@@ -189,27 +196,28 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        randomNumber = UnityEngine.Random.Range(randomNumber, countOne + 1);
+        Debug.Log(countOne);    
+        randomNumber = UnityEngine.Random.Range(0, countOne + 1);
+        Debug.Log(randomNumber);
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Columns; j++)
             {
-                if (cells[j, i].current == PlayerOption.NONE)
+                if(cells[j, i].current == PlayerOption.NONE)
                 {
-                    countTwo++;
-                    if(countTwo == countOne)
+                    if (randomNumber == countTwo)
                     {
-                        Debug.Log(countTwo);
                         ChooseSpace(j, i);
                         Debug.Log("Random");
                         return;
                     }
+                    countTwo++;
                 }
             }
         }
     }
 
-    bool AttemptToBlockO()
+    bool BlockO()
     {
         Debug.Log("hi");
         for(int i = 0; i < 3; i++) // O O ! All across the board (horizontal, left-right read)
@@ -333,7 +341,7 @@ public class TTT : MonoBehaviour
         return false;
     }
 
-    bool AttemptToBlockX()
+    bool BlockX()
     {
         Debug.Log("hi");
         for (int i = 0; i < 3; i++) // X X ! All across the board (horizontal, left-right read)
@@ -701,6 +709,161 @@ public class TTT : MonoBehaviour
         return false;
     }
 
+    bool FromCornerChooseAdjacentCellAsX()
+    {
+        if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
+        {
+            Debug.Log("Adjacent X");
+            bool foundEmpty = false;
+            while (!foundEmpty)
+            {
+                int randonNumber = UnityEngine.Random.Range(0, 4);
+                if (randonNumber == 0 && cells[0, 0].current == PlayerOption.X && (cells[1, 0].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 0].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 0);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[0, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(0, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 1 && cells[2, 0].current == PlayerOption.X && (cells[1, 0].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 0].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 0);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[2, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(2, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 2 && cells[2, 2].current == PlayerOption.X && (cells[1, 2].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 2].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 2);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[2, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(2, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 3 && cells[0, 2].current == PlayerOption.X && (cells[1, 2].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 2].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 2);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[0, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(0, 1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    bool FromCornerChooseAdjacentCellAsO()
+    {
+        if (cells[0, 0].current == PlayerOption.O || cells[2, 0].current == PlayerOption.O || cells[0, 2].current == PlayerOption.O || cells[2, 2].current == PlayerOption.O)
+        {
+            Debug.Log("Adjacent O");
+            bool foundEmpty = false;
+            while (!foundEmpty)
+            {
+                int randonNumber = UnityEngine.Random.Range(0, 4);
+                if (randonNumber == 0 && cells[0, 0].current == PlayerOption.O && (cells[1, 0].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 0].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 0);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[0, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(0, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 1 && cells[2, 0].current == PlayerOption.O && (cells[1, 0].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 0].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 0);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[2, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(2, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 2 && cells[2, 2].current == PlayerOption.O && (cells[1, 2].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 2].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 2);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[2, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(2, 1);
+                        return true;
+                    }
+                }
+                else if (randonNumber == 3 && cells[0, 2].current == PlayerOption.O && (cells[1, 2].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE))
+                {
+                    int randomNumberTwo = UnityEngine.Random.Range(0, 2);
+                    if (randomNumberTwo == 0 && cells[1, 2].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(1, 2);
+                        return true;
+                    }
+                    else if (randomNumberTwo == 1 && cells[0, 1].current == PlayerOption.NONE)
+                    {
+                        foundEmpty = true;
+                        ChooseSpace(0, 1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     PlayerOption GetOtherPlayer()
     {

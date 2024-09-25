@@ -1,10 +1,11 @@
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI.Table;
 using UnityEngine.InputSystem;
+using UnityEditor;
 
 public enum PlayerOption
 {
-    NONE, //0
+    NONE, // 0
     X, // 1
     O // 2
 }
@@ -21,6 +22,9 @@ public class TTT : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = 60;
+
         cells = new Cell[Columns, Rows];
 
         board.InitializeBoard(Columns, Rows);
@@ -41,55 +45,60 @@ public class TTT : MonoBehaviour
         switch(currentPlayer)
         {
             case PlayerOption.X:
-                if (WinAsX())
+                if (IsItEmptyBoard()) // 1st Turn only
+                {
+                    ChooseRandomCorner();
+                    break;
+                }
+                else if (WinAsX()) // It'll try to win in that turn and finish the game if possible
                 {
                     break;
                 }
-                else if (BlockO())
+                else if (BlockO()) // If it can't win in that turn, then it'll look to block O if it's 1 turn about to win
                 {
                     break;
                 }
-                else if (AttemptGoOnMiddle())
+                else if (AttemptGoOnMiddle()) // If there's no blocking needed yet, it'll try to go on the middle
                 {
                     break;
                 }
-                else if (FromCornerChooseAdjacentCellAsX())
+                else if (FromCornerChooseAdjacentCellAsX()) // If it can't go on the middle, it'll try this
                 {
                     break;
                 }
-                else if (ChooseRandomCorner())
+                else if (ChooseRandomCorner()) // If there's no corner adjacent cells available, it'll try to choose a random corner
                 {
                     break;
                 }
                 else
                 {
-                    RandomPossibleCell();
+                    RandomPossibleCell(); // If there's no corner available, it's just RNG
                     break;
                 }
             case PlayerOption.O:
-                if (WinAsO())
+                if (WinAsO()) // It'll try to win in that turn and finish the game if possible
                 {
                     break;
                 }
-                else if (BlockX())
+                else if (BlockX()) // If it can't win in that turn, then it'll look to block X if it's 1 turn about to win
                 {
                     break;
                 }
-                else if (AttemptGoOnMiddle())
+                else if (AttemptGoOnMiddle()) // If there's no blocking needed yet, it'll try to go on the middle
                 {
                    break;
                 }
-                //else if (FromCornerChooseAdjacentCellAsO())
+                //else if (FromCornerChooseAdjacentCellAsO()) // This wouldn't happen normally because they would start blocking each other at this point.
                 //{
                     //break;
                 //}
-                else if (ChooseRandomCorner())
+                else if (ChooseRandomCorner()) // If it can't go in the middle, it'll try to choose a random corner
                 {
                     break;
                 }
                 else
                 {
-                    RandomPossibleCell();
+                    RandomPossibleCell(); // If there's no corner available, it's just RNG
                     break;
                 }
         }
@@ -137,7 +146,7 @@ public class TTT : MonoBehaviour
         if(cells[0, 0].current == PlayerOption.NONE || cells[2, 0].current == PlayerOption.NONE || cells[0, 2].current == PlayerOption.NONE || cells[2, 2].current == PlayerOption.NONE)
         {
             bool foundEmpty = false;
-            Debug.Log("Random Corner");
+            //Debug.Log("Random Corner");
             while (!foundEmpty)
             {
                 int randonNumber = UnityEngine.Random.Range(0, 4);
@@ -174,7 +183,6 @@ public class TTT : MonoBehaviour
     {
         if (cells[1, 1].current == PlayerOption.NONE)
         {
-            //if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
             ChooseSpace(1, 1);
             return true;
         }
@@ -196,9 +204,9 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        Debug.Log(countOne);    
+        //Debug.Log(countOne);    
         randomNumber = UnityEngine.Random.Range(0, countOne + 1);
-        Debug.Log(randomNumber);
+        //Debug.Log(randomNumber);
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Columns; j++)
@@ -208,7 +216,7 @@ public class TTT : MonoBehaviour
                     if (randomNumber == countTwo)
                     {
                         ChooseSpace(j, i);
-                        Debug.Log("Random");
+                        //Debug.Log("Random");
                         return;
                     }
                     countTwo++;
@@ -219,7 +227,7 @@ public class TTT : MonoBehaviour
 
     bool BlockO()
     {
-        Debug.Log("hi");
+        //Debug.Log("hi");
         for(int i = 0; i < 3; i++) // O O ! All across the board (horizontal, left-right read)
         {
             if(cells[0, i].current == PlayerOption.O && cells[1, i].current == PlayerOption.O)
@@ -227,7 +235,7 @@ public class TTT : MonoBehaviour
                 if(cells[2, i].current != PlayerOption.X)
                 {
                     ChooseSpace(2, i);
-                    Debug.Log("1");
+                    //Debug.Log("1");
                     return true;
                 }
             }
@@ -239,7 +247,7 @@ public class TTT : MonoBehaviour
                 if (cells[0, i].current != PlayerOption.X)
                 {
                     ChooseSpace(0, i);
-                    Debug.Log("2");
+                    //Debug.Log("2");
                     return true;
                 }
             }
@@ -251,7 +259,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 2].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 2);
-                    Debug.Log("3");
+                    //Debug.Log("3");
                     return true;
                 }
             }
@@ -263,7 +271,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 0].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 0);
-                    Debug.Log("4");
+                    //Debug.Log("4");
                     return true;
                 }
             }
@@ -275,7 +283,7 @@ public class TTT : MonoBehaviour
                 if (cells[1, i].current != PlayerOption.X)
                 {
                     ChooseSpace(1, i);
-                    Debug.Log("9");
+                    //Debug.Log("9");
                     return true;
                 }
             }
@@ -287,7 +295,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 1].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 1);
-                    Debug.Log("10");
+                    //Debug.Log("10");
                     return true;
                 }
             }
@@ -298,12 +306,12 @@ public class TTT : MonoBehaviour
             {
                 if (cells[i, x].current == PlayerOption.O && cells[1, 1].current == PlayerOption.O)
                 {
-                    if(i == 2 && x == 2)
+                    if(i == 0 && x == 0)
                     {
-                        if (cells[i-2, x-2].current != PlayerOption.X)
+                        if (cells[i+2, x+2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i-2, x-2);
-                            Debug.Log("5");
+                            ChooseSpace(i+2, x+2);
+                            //Debug.Log("5");
                             return true;
                         }
                     }
@@ -312,7 +320,7 @@ public class TTT : MonoBehaviour
                         if (cells[i-2, x+2].current != PlayerOption.X)
                         {
                             ChooseSpace(i-2, x+2);
-                            Debug.Log("6");
+                            //Debug.Log("6");
                             return true;
                         }
                     }
@@ -321,29 +329,29 @@ public class TTT : MonoBehaviour
                         if (cells[i+2, x-2].current != PlayerOption.X)
                         {
                             ChooseSpace(i+2, x-2);
-                            Debug.Log("7");
+                            //Debug.Log("7");
                             return true;
                         }
                     }
-                    else if(i == 2 && x == 0)
+                    else if(i == 2 && x == 2)
                     {
-                        if (cells[i-2, x+2].current != PlayerOption.X)
+                        if (cells[i-2, x-2].current != PlayerOption.X)
                         {
-                            ChooseSpace(i-2, x+2);
-                            Debug.Log("8");
+                            ChooseSpace(i-2, x-2);
+                            //Debug.Log("8");
                             return true;
                         }
                     }
                 }
             }
         }
-        Debug.Log("hi2");
+        //Debug.Log("hi2");
         return false;
     }
 
     bool BlockX()
     {
-        Debug.Log("hi");
+        //Debug.Log("hi");
         for (int i = 0; i < 3; i++) // X X ! All across the board (horizontal, left-right read)
         {
             if (cells[0, i].current == PlayerOption.X && cells[1, i].current == PlayerOption.X)
@@ -351,7 +359,7 @@ public class TTT : MonoBehaviour
                 if (cells[2, i].current != PlayerOption.O)
                 {
                     ChooseSpace(2, i);
-                    Debug.Log("1");
+                    //Debug.Log("1");
                     return true;
                 }
             }
@@ -363,7 +371,7 @@ public class TTT : MonoBehaviour
                 if (cells[0, i].current != PlayerOption.O)
                 {
                     ChooseSpace(0, i);
-                    Debug.Log("2");
+                    //Debug.Log("2");
                     return true;
                 }
             }
@@ -375,7 +383,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 2].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 2);
-                    Debug.Log("3");
+                    //Debug.Log("3");
                     return true;
                 }
             }
@@ -387,7 +395,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 0].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 0);
-                    Debug.Log("4");
+                    //Debug.Log("4");
                     return true;
                 }
             }
@@ -399,7 +407,7 @@ public class TTT : MonoBehaviour
                 if (cells[1, i].current != PlayerOption.O)
                 {
                     ChooseSpace(1, i);
-                    Debug.Log("9");
+                    //Debug.Log("9");
                     return true;
                 }
             }
@@ -411,7 +419,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 1].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 1);
-                    Debug.Log("10");
+                    //Debug.Log("10");
                     return true;
                 }
             }
@@ -422,46 +430,46 @@ public class TTT : MonoBehaviour
             {
                 if (cells[i, x].current == PlayerOption.X && cells[1, 1].current == PlayerOption.X)
                 {
-                    if (i == 2 && x == 2)
+                    if (i == 0 && x == 0)
                     {
-                        if (cells[i - 2, x - 2].current != PlayerOption.O)
+                        if (cells[i+2, x+2].current != PlayerOption.O)
                         {
-                            ChooseSpace(i - 2, x - 2);
-                            Debug.Log("5");
+                            ChooseSpace(i+2, x+2);
+                            //Debug.Log("5");
                             return true;
                         }
                     }
                     else if (i == 2 && x == 0)
                     {
-                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        if (cells[i-2, x+2].current != PlayerOption.O)
                         {
-                            ChooseSpace(i - 2, x + 2);
-                            Debug.Log("6");
+                            ChooseSpace(i-2, x+2);
+                            //Debug.Log("6");
                             return true;
                         }
                     }
                     else if (i == 0 && x == 2)
                     {
-                        if (cells[i + 2, x - 2].current != PlayerOption.O)
+                        if (cells[i+2, x-2].current != PlayerOption.O)
                         {
-                            ChooseSpace(i + 2, x - 2);
-                            Debug.Log("7");
+                            ChooseSpace(i+2, x-2);
+                            //Debug.Log("7");
                             return true;
                         }
                     }
-                    else if (i == 2 && x == 0)
+                    else if (i == 2 && x == 2)
                     {
-                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        if (cells[i-2, x-2].current != PlayerOption.O)
                         {
-                            ChooseSpace(i - 2, x + 2);
-                            Debug.Log("8");
+                            ChooseSpace(i-2, x-2);
+                            //Debug.Log("8");
                             return true;
                         }
                     }
                 }
             }
         }
-        Debug.Log("hi2");
+        //Debug.Log("hi2");
         return false;
     }
 
@@ -474,7 +482,7 @@ public class TTT : MonoBehaviour
                 if (cells[2, i].current != PlayerOption.O)
                 {
                     ChooseSpace(2, i);
-                    Debug.Log("won 1");
+                    //Debug.Log("won 1 X");
                     return true;
                 }
             }
@@ -486,7 +494,7 @@ public class TTT : MonoBehaviour
                 if (cells[0, i].current != PlayerOption.O)
                 {
                     ChooseSpace(0, i);
-                    Debug.Log("won 2");
+                    //Debug.Log("won 2 X");
                     return true;
                 }
             }
@@ -498,7 +506,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 2].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 2);
-                    Debug.Log("won 3");
+                    //Debug.Log("won 3 X");
                     return true;
                 }
             }
@@ -510,7 +518,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 0].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 0);
-                    Debug.Log("won 4");
+                    //Debug.Log("won 4 X");
                     return true;
                 }
             }
@@ -522,7 +530,7 @@ public class TTT : MonoBehaviour
                 if (cells[1, i].current != PlayerOption.O)
                 {
                     ChooseSpace(1, i);
-                    Debug.Log("won 9");
+                    //Debug.Log("won 9 X");
                     return true;
                 }
             }
@@ -534,7 +542,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 1].current != PlayerOption.O)
                 {
                     ChooseSpace(i, 1);
-                    Debug.Log("won 10");
+                    //Debug.Log("won 10 X");
                     return true;
                 }
             }
@@ -550,7 +558,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x - 2].current != PlayerOption.O)
                         {
                             ChooseSpace(i - 2, x - 2);
-                            Debug.Log("won 5");
+                            //Debug.Log("won 5 X");
                             return true;
                         }
                     }
@@ -559,7 +567,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x + 2].current != PlayerOption.O)
                         {
                             ChooseSpace(i - 2, x + 2);
-                            Debug.Log("won 6");
+                            //Debug.Log("won 6 X");
                             return true;
                         }
                     }
@@ -568,7 +576,7 @@ public class TTT : MonoBehaviour
                         if (cells[i + 2, x - 2].current != PlayerOption.O)
                         {
                             ChooseSpace(i + 2, x - 2);
-                            Debug.Log("won 7");
+                            //Debug.Log("won 7 X");
                             return true;
                         }
                     }
@@ -577,7 +585,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x + 2].current != PlayerOption.O)
                         {
                             ChooseSpace(i - 2, x + 2);
-                            Debug.Log("won 8");
+                            //Debug.Log("won 8 X");
                             return true;
                         }
                     }
@@ -596,7 +604,7 @@ public class TTT : MonoBehaviour
                 if (cells[2, i].current != PlayerOption.X)
                 {
                     ChooseSpace(2, i);
-                    Debug.Log("won 1");
+                    //Debug.Log("won 1 O");
                     return true;
                 }
             }
@@ -608,7 +616,7 @@ public class TTT : MonoBehaviour
                 if (cells[0, i].current != PlayerOption.X)
                 {
                     ChooseSpace(0, i);
-                    Debug.Log("won 2");
+                    //Debug.Log("won 2 O");
                     return true;
                 }
             }
@@ -620,7 +628,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 2].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 2);
-                    Debug.Log("won 3");
+                    //Debug.Log("won 3 O");
                     return true;
                 }
             }
@@ -632,7 +640,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 0].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 0);
-                    Debug.Log("won 4");
+                    //Debug.Log("won 4 O");
                     return true;
                 }
             }
@@ -644,7 +652,7 @@ public class TTT : MonoBehaviour
                 if (cells[1, i].current != PlayerOption.X)
                 {
                     ChooseSpace(1, i);
-                    Debug.Log("won 9");
+                    //Debug.Log("won 9 O");
                     return true;
                 }
             }
@@ -656,7 +664,7 @@ public class TTT : MonoBehaviour
                 if (cells[i, 1].current != PlayerOption.X)
                 {
                     ChooseSpace(i, 1);
-                    Debug.Log("won 10");
+                    //Debug.Log("won 10 O");
                     return true;
                 }
             }
@@ -672,7 +680,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x - 2].current != PlayerOption.X)
                         {
                             ChooseSpace(i - 2, x - 2);
-                            Debug.Log("won 5");
+                            //Debug.Log("won 5 O");
                             return true;
                         }
                     }
@@ -681,7 +689,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x + 2].current != PlayerOption.X)
                         {
                             ChooseSpace(i - 2, x + 2);
-                            Debug.Log("won 6");
+                            //Debug.Log("won 6 O");
                             return true;
                         }
                     }
@@ -690,7 +698,7 @@ public class TTT : MonoBehaviour
                         if (cells[i + 2, x - 2].current != PlayerOption.X)
                         {
                             ChooseSpace(i + 2, x - 2);
-                            Debug.Log("won 7");
+                            //Debug.Log("won 7 O");
                             return true;
                         }
                     }
@@ -699,7 +707,7 @@ public class TTT : MonoBehaviour
                         if (cells[i - 2, x + 2].current != PlayerOption.X)
                         {
                             ChooseSpace(i - 2, x + 2);
-                            Debug.Log("won 8");
+                            //Debug.Log("won 8 O");
                             return true;
                         }
                     }
@@ -713,7 +721,7 @@ public class TTT : MonoBehaviour
     {
         if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
         {
-            Debug.Log("Adjacent X");
+            //Debug.Log("Adjacent X");
             bool foundEmpty = false;
             while (!foundEmpty)
             {
@@ -791,7 +799,7 @@ public class TTT : MonoBehaviour
     {
         if (cells[0, 0].current == PlayerOption.O || cells[2, 0].current == PlayerOption.O || cells[0, 2].current == PlayerOption.O || cells[2, 2].current == PlayerOption.O)
         {
-            Debug.Log("Adjacent O");
+            //Debug.Log("Adjacent O");
             bool foundEmpty = false;
             while (!foundEmpty)
             {

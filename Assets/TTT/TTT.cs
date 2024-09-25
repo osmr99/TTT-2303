@@ -41,38 +41,50 @@ public class TTT : MonoBehaviour
         switch(currentPlayer)
         {
             case PlayerOption.X:
-                if(IsItEmptyBoard())            // Perfect 1st Turn
+                if (IsItEmptyBoard())
                 {
                     ChooseRandomCorner();
+                    break;
+                }
+                else if (WinAsX())
+                {
                     break;
                 }
                 else if (AttemptToBlockO())
                 {
-                    Debug.Log("A");
+                    break;
+                }
+                else if (CanGoOnMiddle())
+                {
                     break;
                 }
                 else
                 {
-                    Debug.Log("B");
-                    randomPossibleCell();
+                    RandomPossibleCell();
                     break;
                 }
             case PlayerOption.O:
-                if(CanOGoOnMiddle())            // Perfect 1st Turn
+                if (WinAsO())
                 {
-                    ChooseSpace(1, 1);
+                    break;
                 }
-                else if(CheckIfAllCornersAreEmpty()) // 2nd turn if X took the middle
+                else if (AttemptToBlockX())
                 {
-                    ChooseRandomCorner();
+                    break;
+                }
+                else if (CanGoOnMiddle())
+                {
+                    break;
+                }
+                else if (ChooseRandomCorner())
+                {
+                    break;
                 }
                 else
                 {
-                    randomPossibleCell();
+                    RandomPossibleCell();
                     break;
                 }
-                Debug.Log("NO");
-                break;
         }
     }
 
@@ -113,30 +125,56 @@ public class TTT : MonoBehaviour
         return false;
     }
 
-    void ChooseRandomCorner()
+    bool ChooseRandomCorner()
     {
-        int randonNumber = UnityEngine.Random.Range(0, 4);
-        if (randonNumber == 0)
-            ChooseSpace(0, 0);
-        else if (randonNumber == 1)
-            ChooseSpace(2, 0);
-        else if (randonNumber == 2)
-            ChooseSpace(0, 2);
-        else if (randonNumber == 3)
-            ChooseSpace(2, 2);
-    }
-
-    bool CanOGoOnMiddle()
-    {
-        if (cells[1, 1].current == PlayerOption.NONE)
+        if(cells[0, 0].current == PlayerOption.NONE || cells[2, 0].current == PlayerOption.NONE || cells[0, 2].current == PlayerOption.NONE || cells[2, 2].current == PlayerOption.NONE)
         {
-            if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
-                return true;
+            bool foundEmpty = false;
+            Debug.Log("Random Corner");
+            while (!foundEmpty)
+            {
+                int randonNumber = UnityEngine.Random.Range(0, 4);
+                if (randonNumber == 0 && cells[0, 0].current == PlayerOption.NONE)
+                {
+                    foundEmpty = true;
+                    ChooseSpace(0, 0);
+                    return true;
+                }
+                else if (randonNumber == 1 && cells[2, 0].current == PlayerOption.NONE)
+                {
+                    foundEmpty = true;
+                    ChooseSpace(2, 0);
+                    return true;
+                }
+                else if (randonNumber == 2 && cells[0, 2].current == PlayerOption.NONE)
+                {
+                    foundEmpty = true;
+                    ChooseSpace(0, 2);
+                    return true;
+                }
+                else if (randonNumber == 3 && cells[2, 2].current == PlayerOption.NONE)
+                {
+                    foundEmpty = true;
+                    ChooseSpace(2, 2);
+                    return true;
+                }
+            }
         }
         return false;
     }
 
-    void randomPossibleCell()
+    bool CanGoOnMiddle()
+    {
+        if (cells[1, 1].current == PlayerOption.NONE)
+        {
+            //if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
+            ChooseSpace(1, 1);
+            return true;
+        }
+        return false;
+    }
+
+    void RandomPossibleCell()
     {
         int countOne = 0;
         int randomNumber = 0;
@@ -161,7 +199,9 @@ public class TTT : MonoBehaviour
                     countTwo++;
                     if(countTwo == countOne)
                     {
+                        Debug.Log(countTwo);
                         ChooseSpace(j, i);
+                        Debug.Log("Random");
                         return;
                     }
                 }
@@ -172,7 +212,7 @@ public class TTT : MonoBehaviour
     bool AttemptToBlockO()
     {
         Debug.Log("hi");
-        for(int i = 0; i < 2; i++) // O O ! All across the board (horizontal, left-right read)
+        for(int i = 0; i < 3; i++) // O O ! All across the board (horizontal, left-right read)
         {
             if(cells[0, i].current == PlayerOption.O && cells[1, i].current == PlayerOption.O)
             {
@@ -184,7 +224,7 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        for(int i = 0; i < 2; i++) // ! O O All across the board (horizontal, left-right read)
+        for(int i = 0; i < 3; i++) // ! O O All across the board (horizontal, left-right read)
         {
             if (cells[1,i].current == PlayerOption.O && cells[2, i].current == PlayerOption.O)
             {
@@ -196,7 +236,7 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        for(int i = 0; i < 2; i++) // O O ! All across the board (vertical, top-bottom read)
+        for(int i = 0; i < 3; i++) // O O ! All across the board (vertical, top-bottom read)
         {
             if (cells[i,0].current == PlayerOption.O && cells[i,1].current == PlayerOption.O)
             {
@@ -208,7 +248,7 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        for (int i = 1; i < 3; i++) // ! O O All across the board (vertical, top-bottom read)
+        for (int i = 0; i < 3; i++) // ! O O All across the board (vertical, top-bottom read)
         {
             if (cells[i, 1].current == PlayerOption.O && cells[i, 2].current == PlayerOption.O)
             {
@@ -220,7 +260,31 @@ public class TTT : MonoBehaviour
                 }
             }
         }
-        for(int i = 0; i < 3; i += 2) // All diagonal cases
+        for (int i = 0; i < 3; i++) // O ! O All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.O && cells[2, i].current == PlayerOption.O)
+            {
+                if (cells[1, i].current != PlayerOption.X)
+                {
+                    ChooseSpace(1, i);
+                    Debug.Log("9");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // O ! O All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.O && cells[i, 2].current == PlayerOption.O)
+            {
+                if (cells[i, 1].current != PlayerOption.X)
+                {
+                    ChooseSpace(i, 1);
+                    Debug.Log("10");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i += 2) // All diagonal cases
         {
             for (int x = 0; x < 3; x += 2)
             {
@@ -268,6 +332,375 @@ public class TTT : MonoBehaviour
         Debug.Log("hi2");
         return false;
     }
+
+    bool AttemptToBlockX()
+    {
+        Debug.Log("hi");
+        for (int i = 0; i < 3; i++) // X X ! All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.X && cells[1, i].current == PlayerOption.X)
+            {
+                if (cells[2, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(2, i);
+                    Debug.Log("1");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! X X All across the board (horizontal, left-right read)
+        {
+            if (cells[1, i].current == PlayerOption.X && cells[2, i].current == PlayerOption.X)
+            {
+                if (cells[0, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(0, i);
+                    Debug.Log("2");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X X ! All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.X && cells[i, 1].current == PlayerOption.X)
+            {
+                if (cells[i, 2].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 2);
+                    Debug.Log("3");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! X X All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 1].current == PlayerOption.X && cells[i, 2].current == PlayerOption.X)
+            {
+                if (cells[i, 0].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 0);
+                    Debug.Log("4");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X ! X All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.X && cells[2, i].current == PlayerOption.X)
+            {
+                if (cells[1, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(1, i);
+                    Debug.Log("9");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X ! X All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.X && cells[i, 2].current == PlayerOption.X)
+            {
+                if (cells[i, 1].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 1);
+                    Debug.Log("10");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i += 2) // All diagonal cases
+        {
+            for (int x = 0; x < 3; x += 2)
+            {
+                if (cells[i, x].current == PlayerOption.X && cells[1, 1].current == PlayerOption.X)
+                {
+                    if (i == 2 && x == 2)
+                    {
+                        if (cells[i - 2, x - 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x - 2);
+                            Debug.Log("5");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("6");
+                            return true;
+                        }
+                    }
+                    else if (i == 0 && x == 2)
+                    {
+                        if (cells[i + 2, x - 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i + 2, x - 2);
+                            Debug.Log("7");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("8");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        Debug.Log("hi2");
+        return false;
+    }
+
+    bool WinAsX()
+    {
+        for (int i = 0; i < 3; i++) // X X ! All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.X && cells[1, i].current == PlayerOption.X)
+            {
+                if (cells[2, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(2, i);
+                    Debug.Log("won 1");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! X X All across the board (horizontal, left-right read)
+        {
+            if (cells[1, i].current == PlayerOption.X && cells[2, i].current == PlayerOption.X)
+            {
+                if (cells[0, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(0, i);
+                    Debug.Log("won 2");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X X ! All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.X && cells[i, 1].current == PlayerOption.X)
+            {
+                if (cells[i, 2].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 2);
+                    Debug.Log("won 3");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! X X All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 1].current == PlayerOption.X && cells[i, 2].current == PlayerOption.X)
+            {
+                if (cells[i, 0].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 0);
+                    Debug.Log("won 4");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X ! X All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.X && cells[2, i].current == PlayerOption.X)
+            {
+                if (cells[1, i].current != PlayerOption.O)
+                {
+                    ChooseSpace(1, i);
+                    Debug.Log("won 9");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // X ! X All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.X && cells[i, 2].current == PlayerOption.X)
+            {
+                if (cells[i, 1].current != PlayerOption.O)
+                {
+                    ChooseSpace(i, 1);
+                    Debug.Log("won 10");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i += 2) // All diagonal cases
+        {
+            for (int x = 0; x < 3; x += 2)
+            {
+                if (cells[i, x].current == PlayerOption.X && cells[1, 1].current == PlayerOption.X)
+                {
+                    if (i == 2 && x == 2)
+                    {
+                        if (cells[i - 2, x - 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x - 2);
+                            Debug.Log("won 5");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("won 6");
+                            return true;
+                        }
+                    }
+                    else if (i == 0 && x == 2)
+                    {
+                        if (cells[i + 2, x - 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i + 2, x - 2);
+                            Debug.Log("won 7");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.O)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("won 8");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    bool WinAsO()
+    {
+        for (int i = 0; i < 3; i++) // O O ! All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.O && cells[1, i].current == PlayerOption.O)
+            {
+                if (cells[2, i].current != PlayerOption.X)
+                {
+                    ChooseSpace(2, i);
+                    Debug.Log("won 1");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! O O All across the board (horizontal, left-right read)
+        {
+            if (cells[1, i].current == PlayerOption.O && cells[2, i].current == PlayerOption.O)
+            {
+                if (cells[0, i].current != PlayerOption.X)
+                {
+                    ChooseSpace(0, i);
+                    Debug.Log("won 2");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // O O ! All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.O && cells[i, 1].current == PlayerOption.O)
+            {
+                if (cells[i, 2].current != PlayerOption.X)
+                {
+                    ChooseSpace(i, 2);
+                    Debug.Log("won 3");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // ! O O All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 1].current == PlayerOption.O && cells[i, 2].current == PlayerOption.O)
+            {
+                if (cells[i, 0].current != PlayerOption.X)
+                {
+                    ChooseSpace(i, 0);
+                    Debug.Log("won 4");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // O ! O All across the board (horizontal, left-right read)
+        {
+            if (cells[0, i].current == PlayerOption.O && cells[2, i].current == PlayerOption.O)
+            {
+                if (cells[1, i].current != PlayerOption.X)
+                {
+                    ChooseSpace(1, i);
+                    Debug.Log("won 9");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) // O ! O All across the board (vertical, top-bottom read)
+        {
+            if (cells[i, 0].current == PlayerOption.O && cells[i, 2].current == PlayerOption.O)
+            {
+                if (cells[i, 1].current != PlayerOption.X)
+                {
+                    ChooseSpace(i, 1);
+                    Debug.Log("won 10");
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < 3; i += 2) // All diagonal cases
+        {
+            for (int x = 0; x < 3; x += 2)
+            {
+                if (cells[i, x].current == PlayerOption.O && cells[1, 1].current == PlayerOption.O)
+                {
+                    if (i == 2 && x == 2)
+                    {
+                        if (cells[i - 2, x - 2].current != PlayerOption.X)
+                        {
+                            ChooseSpace(i - 2, x - 2);
+                            Debug.Log("won 5");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.X)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("won 6");
+                            return true;
+                        }
+                    }
+                    else if (i == 0 && x == 2)
+                    {
+                        if (cells[i + 2, x - 2].current != PlayerOption.X)
+                        {
+                            ChooseSpace(i + 2, x - 2);
+                            Debug.Log("won 7");
+                            return true;
+                        }
+                    }
+                    else if (i == 2 && x == 0)
+                    {
+                        if (cells[i - 2, x + 2].current != PlayerOption.X)
+                        {
+                            ChooseSpace(i - 2, x + 2);
+                            Debug.Log("won 8");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     PlayerOption GetOtherPlayer()
     {

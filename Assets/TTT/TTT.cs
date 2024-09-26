@@ -113,6 +113,7 @@ public class TTT : MonoBehaviour
                 cells[j, i].current = PlayerOption.NONE;
         }
         currentPlayer = PlayerOption.X;
+        Debug.Log("Successful reset");
     }
 
     bool IsItEmptyBoard()
@@ -719,7 +720,7 @@ public class TTT : MonoBehaviour
 
     bool FromCornerChooseAdjacentCellAsX()
     {
-        if (cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X)
+        if ((cells[0, 0].current == PlayerOption.X || cells[2, 0].current == PlayerOption.X || cells[0, 2].current == PlayerOption.X || cells[2, 2].current == PlayerOption.X) && ((cells[1, 0].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE) || (cells[1, 0].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE) || (cells[1, 2].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE) || (cells[1, 2].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE)))
         {
             //Debug.Log("Adjacent X");
             bool foundEmpty = false;
@@ -797,9 +798,9 @@ public class TTT : MonoBehaviour
 
     bool FromCornerChooseAdjacentCellAsO()
     {
-        if (cells[0, 0].current == PlayerOption.O || cells[2, 0].current == PlayerOption.O || cells[0, 2].current == PlayerOption.O || cells[2, 2].current == PlayerOption.O)
+        if ((cells[0, 0].current == PlayerOption.O || cells[2, 0].current == PlayerOption.O || cells[0, 2].current == PlayerOption.O || cells[2, 2].current == PlayerOption.O) && ((cells[1, 0].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE) || (cells[1, 0].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE) || (cells[1, 2].current == PlayerOption.NONE || cells[2, 1].current == PlayerOption.NONE) || (cells[1, 2].current == PlayerOption.NONE || cells[0, 1].current == PlayerOption.NONE)))
         {
-            //Debug.Log("Adjacent O");
+            //Debug.Log("Adjacent X");
             bool foundEmpty = false;
             while (!foundEmpty)
             {
